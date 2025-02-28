@@ -2,6 +2,7 @@
   become: yes
   vars:
     project_dir: "/home/ubuntu/test-task-django-stripe"
+    ssl_dir: "/etc/nginx/ssl"
 
   tasks:
     - name: Update APT and install dependencies
@@ -53,14 +54,20 @@
         dest: "{{ project_dir }}/.env"
         mode: '0600'
 
+    - name: Ensure SSL directory exists
+      file:
+        path: "{{ ssl_dir }}"
+        state: directory
+        mode: '0755'
+
     - name: Generate a self-signed SSL certificate
       command: >
         openssl req -x509 -nodes -days 365 -newkey rsa:2048
-        -keyout /etc/nginx/ssl/nginx-selfsigned.key
-        -out /etc/nginx/ssl/nginx-selfsigned.crt
+        -keyout {{ ssl_dir }}/nginx-selfsigned.key
+        -out {{ ssl_dir }}/nginx-selfsigned.crt
         -subj "/C=US/ST=State/L=City/O=Company/CN=147.45.69.155"
       args:
-        creates: /etc/nginx/ssl/nginx-selfsigned.crt
+        creates: "{{ ssl_dir }}/nginx-selfsigned.crt"
 
     - name: Copy Nginx configuration file
       copy:
