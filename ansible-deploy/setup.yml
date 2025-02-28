@@ -1,7 +1,10 @@
 - hosts: django_server
   become: yes
+  vars:
+    project_dir: "/home/ubuntu/test-task-django-stripe"
+
   tasks:
-    - name: Update APT cache and install prerequisites
+    - name: Update APT and install dependencies
       apt:
         update_cache: yes
         name:
@@ -9,6 +12,9 @@
           - curl
           - gnupg
           - lsb-release
+          - nginx
+          - certbot
+          - python3-certbot-nginx
         state: present
 
     - name: Add Docker GPG key
@@ -21,7 +27,7 @@
         repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_lsb.codename }} stable"
         state: present
 
-    - name: Install Docker and related packages
+    - name: Install Docker and Docker Compose
       apt:
         update_cache: yes
         name:
@@ -34,19 +40,35 @@
     - name: Clone project from GitHub
       git:
         repo: "git@github.com:Friedox/test-task-django-stripe.git"
-        dest: /home/ubuntu/test-task-django-stripe
+        dest: "{{ project_dir }}"
         version: "main"
         force: yes
         accept_hostkey: yes
         key_file: "/root/.ssh/id_ed25519"
 
-    - name: Copy local .env file to server
+    - name: Copy .env file to server
       copy:
         src: ../.env
-        dest: /home/ubuntu/test-task-django-stripe/.env
+        dest: "{{ project_dir }}/.env"
         mode: '0600'
 
-    - name: Bring up the application with Docker Compose
+    - name: Start Docker services
       command: docker compose up -d --build
       args:
-        chdir: /home/ubuntu/test-task-django-stripe
+        chdir: "{{ project_dir }}"
+
+    - name: Ensure Nginx is running
+      service:
+        name: nginx
+        state: restarted
+        enabled: yes
+
+    - name: Obtain SSL Certificate from Let's Encrypt
+      command: certbot --nginx -d 147.45.69.155 --non-interactive --agree-tos -m admin@example.com --redirect
+
+    - name: Set up automatic SSL renewal
+      cron:
+        name: "Renew Let's Encrypt certificates"
+        job: "certbot renew --quiet"
+        minute: "0"
+        hour: "0"
