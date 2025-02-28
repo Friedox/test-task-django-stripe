@@ -44,10 +44,11 @@
         version: "main"
         force: yes
         accept_hostkey: yes
+        key_file: "/root/.ssh/id_ed25519"
 
     - name: Copy local .env file to server
       copy:
-        src: ../test-task-django-stripe/.env
+        src: ../.env
         dest: /home/ubuntu/test-task-django-stripe/.env
         mode: '0600'
 
