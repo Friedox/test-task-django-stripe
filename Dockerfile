@@ -12,6 +12,8 @@ RUN pip install poetry && \
 
 COPY . .
 
+RUN chmod +x /app/entrypoint.sh
+
 RUN poetry run python manage.py collectstatic --noinput
 
 ENTRYPOINT ["/app/entrypoint.sh"]
