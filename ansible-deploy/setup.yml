@@ -15,6 +15,7 @@
           - nginx
           - certbot
           - python3-certbot-nginx
+          - openssl
         state: present
 
     - name: Add Docker GPG key
@@ -52,23 +53,35 @@
         dest: "{{ project_dir }}/.env"
         mode: '0600'
 
+    - name: Generate a self-signed SSL certificate
+      command: >
+        openssl req -x509 -nodes -days 365 -newkey rsa:2048
+        -keyout /etc/nginx/ssl/nginx-selfsigned.key
+        -out /etc/nginx/ssl/nginx-selfsigned.crt
+        -subj "/C=US/ST=State/L=City/O=Company/CN=147.45.69.155"
+      args:
+        creates: /etc/nginx/ssl/nginx-selfsigned.crt
+
+    - name: Copy Nginx configuration file
+      copy:
+        src: ./nginx.conf
+        dest: /etc/nginx/nginx.conf
+        mode: '0644'
+
+    - name: Restart Nginx
+      systemd:
+        name: nginx
+        state: restarted
+        enabled: yes
+
     - name: Start Docker services
       command: docker compose up -d --build
       args:
         chdir: "{{ project_dir }}"
 
-    - name: Ensure Nginx is running
-      service:
-        name: nginx
-        state: restarted
-        enabled: yes
-
-    - name: Obtain SSL Certificate from Let's Encrypt
-      command: certbot --nginx -d 147.45.69.155 --non-interactive --agree-tos -m admin@example.com --redirect
-
     - name: Set up automatic SSL renewal
       cron:
-        name: "Renew Let's Encrypt certificates"
-        job: "certbot renew --quiet"
+        name: "Renew SSL certificates"
+        job: "certbot renew --quiet || systemctl reload nginx"
         minute: "0"
         hour: "0"
