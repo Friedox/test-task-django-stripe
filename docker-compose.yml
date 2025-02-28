@@ -1,9 +1,15 @@
+networks:
+  mynetwork:
+    driver: bridge
+
 services:
   web:
     build: .
     env_file: .env
     expose:
       - "8000"
+    networks:
+      - mynetwork
 
   nginx:
     image: nginx:latest
@@ -15,3 +21,5 @@ services:
       - /etc/nginx/ssl:/etc/nginx/ssl:ro
     depends_on:
       - web
+    networks:
+      - mynetwork
