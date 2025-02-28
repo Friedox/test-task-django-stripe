@@ -1,5 +1,6 @@
 networks:
-  mynetwork:
+  app_network:
+    driver: bridge
 
 services:
   web:
