@@ -8,13 +8,15 @@ env = environ.Env(DEBUG=(bool, False))
 # Read the .env file located in the BASE_DIR
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
-# Static files configuration
+# Static and Media files configuration
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'mediafiles'
 
 SECRET_KEY = env('DJANGO_SECRET_KEY')
-DEBUG = env('DEBUG')
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=[])
+DEBUG = env.bool('DEBUG', default=False)
+ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', default=["127.0.0.1"])
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -86,6 +88,12 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Security settings for HTTPS
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
 
 # Stripe settings for USD (default)
 STRIPE_PUBLIC_KEY = env("STRIPE_PUBLIC_KEY")
