@@ -39,10 +39,11 @@
 
     - name: Clone project from GitHub
       git:
-        repo: "https://github.com/Friedox/test-task-django-stripe.git"
+        repo: "git@github.com:Friedox/test-task-django-stripe.git"
         dest: /home/ubuntu/test-task-django-stripe
         version: "main"
         force: yes
+        accept_hostkey: yes
 
     - name: Copy local .env file to server
       copy:
