@@ -8,11 +8,14 @@ __pycache__/
 venv/
 env/
 
-# Distribution / packaging
-.Python
+# Poetry lock file and build directories
+poetry.lock
 build/
-develop-eggs/
 dist/
+
+# Package build directories
+.Python
+develop-eggs/
 downloads/
 eggs/
 .eggs/
@@ -25,14 +28,17 @@ var/
 .installed.cfg
 *.egg
 
-# PyCharm
+# IDE files (e.g., PyCharm)
 .idea/
 
 # Django specific:
 *.log
 local_settings.py
 
-# Unit test / coverage reports
+# Migrations (optional: usually migrations are included in the repository)
+# payments/migrations/
+
+# Test / coverage reports
 htmlcov/
 .tox/
 .coverage
@@ -49,5 +55,11 @@ coverage.xml
 *.sublime-project
 *.sublime-workspace
 
-# Environment variables file
+# Environment file
 .env
+
+# SQLite database file
+db.sqlite3
+
+# Inventory file for Ansible (contains sensitive data)
+inventory.ini
