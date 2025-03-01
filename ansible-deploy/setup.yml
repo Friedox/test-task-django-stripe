@@ -69,18 +69,6 @@
       args:
         creates: "{{ ssl_dir }}/nginx-selfsigned.crt"
 
-    - name: Copy Nginx configuration file
-      copy:
-        src: ../nginx.conf
-        dest: /etc/nginx/nginx.conf
-        mode: '0644'
-
-    - name: Restart Nginx
-      systemd:
-        name: nginx
-        state: restarted
-        enabled: yes
-
     - name: Start Docker services
       command: docker compose up -d --build
       args:
