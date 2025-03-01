@@ -16,7 +16,7 @@ def buy(request, id):
     if currency == 'eur':
         amount = int(item.price * Decimal("1.1") * 100)
         final_currency = 'usd'
-        stripe.api_key = settings.STRIPE_SECRET_KEY  # используем USD-ключ
+        stripe.api_key = settings.STRIPE_SECRET_KEY
     else:
         amount = int(item.price * 100)
         final_currency = currency
@@ -36,7 +36,7 @@ def buy(request, id):
 def item_detail(request, id):
     item = get_object_or_404(Item, id=id)
     currency = item.currency.lower() if hasattr(item, 'currency') else 'usd'
-    public_key = settings.STRIPE_PUBLIC_KEY  # предполагаем, что используем USD публичный ключ
+    public_key = settings.STRIPE_PUBLIC_KEY
     return render(request, 'item.html', {
         'item': item,
         'stripe_public_key': public_key
@@ -60,7 +60,7 @@ def order_detail(request, order_id):
             'price_usd': price_usd,
         })
 
-    public_key = settings.STRIPE_PUBLIC_KEY  # используем USD публичный ключ
+    public_key = settings.STRIPE_PUBLIC_KEY
     return render(request, 'order_detail.html', {
         'order': order,
         'converted_items': converted_items,
@@ -88,7 +88,7 @@ def create_order_payment_intent(request, order_id):
 
     try:
         intent = stripe.PaymentIntent.create(
-            amount=int(total * 100),  # сумма в центах
+            amount=int(total * 100),
             currency=final_currency,
             payment_method_types=['card'],
             metadata={'order_id': order.id},
