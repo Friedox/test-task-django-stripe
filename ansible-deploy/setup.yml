@@ -2,7 +2,7 @@
   become: yes
   vars:
     project_dir: "/home/ubuntu/test-task-django-stripe"
-    ssl_dir: "/etc/nginx/ssl"
+    ssl_dir: "{{ project_dir }}/ssl"
 
   tasks:
     - name: Update APT and install dependencies
